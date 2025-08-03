@@ -48,7 +48,8 @@ Just run the app and start typing!
 - Add real screenshot links if you have them
 - Rename `chatbot_theme.py` if your filename is different
 
-
+#INSTALLATION
+Clone this repository :git clone https://github.com/juv-hue/CHATBOT-FAQ-CODEALPHA
 
 
 
