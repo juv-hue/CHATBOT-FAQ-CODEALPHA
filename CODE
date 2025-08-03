@@ -1,0 +1,101 @@
+import tkinter as tk
+from difflib import get_close_matches
+
+# === FAQ Dictionary ===
+faq_data = {
+    # Service-related FAQs
+    "what is your return policy": "Our return policy allows returns within 30 days of purchase with a valid receipt.",
+    "how can i track my order": "You can track your order using the tracking link sent to your email after shipment.",
+    "what are your customer service hours": "Our customer service is available from 9 AM to 6 PM, Monday through Saturday.",
+    "how do i reset my password": "To reset your password, click on 'Forgot Password' at the login page and follow the instructions.",
+    "do you ship internationally": "Yes, we ship to selected countries. Please check our shipping policy for the list.",
+    "how do i contact customer service": "You can contact customer service via phone, email, or our live chat feature on the website.",
+    "can i cancel my order": "Yes, you can cancel your order within 24 hours of placing it by contacting our support team.",
+    "what payment methods do you accept": "We accept Visa, MasterCard, PayPal, and other major credit/debit cards.",
+    "how long does shipping take": "Shipping typically takes 3-7 business days depending on your location.",
+    "can i change my shipping address": "Yes, you can change your shipping address before the order is dispatched. Contact support as soon as possible.",
+    "do you offer gift wrapping": "Yes, we offer gift wrapping at checkout for an additional fee.",
+    "is there a warranty on products": "Most products come with a 1-year warranty. Details are available on the product page.",
+    "how do i subscribe to your newsletter": "You can subscribe to our newsletter by entering your email at the bottom of our homepage.",
+    "how can i apply a discount code": "You can apply a discount code during checkout in the 'Promo Code' section.",
+    "where are you located": "Our headquarters are located in New York City, but we ship nationwide.",
+    "can i return a sale item": "Sale items can only be returned if they're defective or damaged.",
+    "how do i leave a review": "You can leave a review by visiting the product page and clicking on 'Write a Review'.",
+    "do you have a mobile app": "Yes, our mobile app is available on both Android and iOS platforms.",
+    "what if i receive a damaged item": "If you receive a damaged item, contact customer service within 48 hours with photos of the damage.",
+    "how do i create an account": "Click on the 'Sign Up' button on our homepage and fill in your details to create an account.",
+
+    # AI-related FAQs
+    "what is artificial intelligence": "Artificial Intelligence (AI) is the simulation of human intelligence processes by machines, especially computer systems.",
+    "what are the types of ai": "AI is typically categorized into narrow AI, general AI, and superintelligent AI.",
+    "how does machine learning work": "Machine learning works by training algorithms on data so they can learn to make predictions or decisions without being explicitly programmed.",
+    "what is the difference between ai and machine learning": "AI is the broader concept of machines performing tasks intelligently, while machine learning is a subset of AI that involves learning from data.",
+    "what are neural networks": "Neural networks are a series of algorithms that mimic the operations of a human brain to recognize relationships and patterns in data.",
+    "is ai dangerous": "AI can pose risks if misused, such as bias, surveillance, or job displacement, but with proper regulation, it can be beneficial.",
+    "what programming languages are used for ai": "Common languages for AI development include Python, R, Java, and C++.",
+    "what is deep learning": "Deep learning is a subset of machine learning involving neural networks with many layers that can model complex patterns in data.",
+    "what is natural language processing": "Natural Language Processing (NLP) is a field of AI that enables computers to understand, interpret, and generate human language.",
+    "can ai replace humans": "AI can automate certain tasks, but it lacks emotions, consciousness, and common sense. It complements rather than replaces humans in most fields."
+}
+
+faq_clean = {k.lower(): v for k, v in faq_data.items()}
+
+# === Chat Logic ===
+def get_response(query):
+    query = query.lower()
+
+    if "pronounce" in query or "pronunciation" in query:
+        return "Sorry, I can’t help with pronunciations. Please ask something else."
+
+    if query in faq_clean:
+        return faq_clean[query]
+
+    match = get_close_matches(query, faq_clean.keys(), n=1, cutoff=0.6)
+    if match:
+        return f"I'm not sure, but here's something related:\n{faq_clean[match[0]]}"
+
+    return "I'm not sure I understand. Can you rephrase your question?"
+
+# === GUI Actions ===
+def send_message():
+    user_input = entry.get()
+    if user_input.strip() == "":
+        return
+    chat_log.insert(tk.END, f"You: {user_input}\n", "user")
+    response = get_response(user_input)
+    chat_log.insert(tk.END, f"Bot: {response}\n\n", "bot")
+    entry.delete(0, tk.END)
+
+def clear_chat():
+    chat_log.delete('1.0', tk.END)
+
+# === GUI Setup ===
+root = tk.Tk()
+root.title("🌸 AI + Service Chatbot")
+root.geometry("600x550")
+root.configure(bg="#FFE5B4")  # Peach background
+root.resizable(False, False)
+
+# Chat display
+chat_log = tk.Text(root, wrap="word", font=("Helvetica", 12), bg="#FFF5E1")
+chat_log.tag_config("user", foreground="blue")
+chat_log.tag_config("bot", foreground="darkgreen")
+chat_log.pack(padx=10, pady=(10, 5), fill=tk.BOTH, expand=True)
+
+# Input + Buttons Frame
+frame = tk.Frame(root, bg="#FFE5B4")
+frame.pack(padx=10, pady=10, fill=tk.X)
+
+entry = tk.Entry(frame, font=("Helvetica", 14), bg="#FFFFFF")
+entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
+entry.focus()
+
+send_btn = tk.Button(frame, text="Send", command=send_message, bg="#FFCC99", font=("Helvetica", 11, "bold"))
+send_btn.pack(side=tk.RIGHT)
+
+# Clear Chat Button
+clear_btn = tk.Button(root, text="🧹 Clear Chat", command=clear_chat, bg="#FFCC99", font=("Helvetica", 11, "bold"))
+clear_btn.pack(pady=(0, 10))
+
+# Run
+root.mainloop()
